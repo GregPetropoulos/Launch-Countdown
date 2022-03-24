@@ -11,10 +11,7 @@ const Home = () => {
       <h1>Countdown</h1>
       <main>
         <section>
-          <CountDown/>
-        </section>
-        <section>
-          <Counter />
+          <CountDown />
         </section>
         <section>
           <small>Estimated deployment time</small>
