@@ -1,100 +1,170 @@
-import { useState, useEffect, useRef } from 'react';
-// import Counter from './Counter';
 import { MdMotionPhotosPause, MdOutlineNotStarted } from 'react-icons/md';
-
+import useCounter from './hooks/useCounter';
+import TimeZone from './TimeZone';
 const CountDown = () => {
-  // format MM:SS use should be able to start the countdown in minutes
-  // const [seconds, setSeconds] = useState(0);
-  // const [minutes, setMinutes] = useState(0);
-  const [timer, setTimer] = useState(0);
+  const {
+    isActive,
+    setIsActive,
+    timer,
+    setTimer,
+    setIsPaused,
+    inputRef,
+    isPaused,
+    defSpeed,
+    setDefSpeed,
+    isSpeed2,
+    setIsSpeed2,
+    isSpeed15,
+    setIsSpeed15
+  } = useCounter();
 
-  const [isActive, setIsActive] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const inputref = useRef('');
-
-  useEffect(() => {
-    console.log('useEfect in effect');
-
-    let interval = null;
-
-    if (isActive) {
-      interval = setInterval(() => {
-        setTimer((prevState) => prevState - 1);
-      }, 1000);
-    } else if (!isActive && timer !== 0) {
-      clearInterval(interval);
-    }
-    // Stop interval and state at 0
-    if (timer === 0) {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, timer]);
-
-  const onChange = (e) => {
-    // const showMin = Math.floor(e.target.value/60)%60
-
-    setTimer(~~e.target.value);
-
-    // setSeconds(~~e.target.value);
-  };
-  // console.log('minutes', minutes);
-  // console.log('seconds', seconds);
-  console.log('timer', timer);
-
-  //   Initialize the count down timer and pass to counter formatted
-  const onCountDown = (e) => {
-    console.log('clicked');
+  //* START THE COUNTDOWN
+  const onCountDown = () => {
     setIsActive(!isActive);
+    setTimer(inputRef.current.value * 60);
   };
-
-  const onOffCounter =() => {
-    console.log('onOffounter');
+  // * PLAY AND RESUME
+  const onOffCounter = () => {
     setIsActive(!isActive);
-    setIsPaused(true) //TODO STOPPED HERE WORK ON/OFF
-  }
-  //TODO SPEED BUTTONS
-  //TODO DEPLOYMENT DATE ADJUSTEMENTS
-
-
-  const formatTime = () => {
-    const getSeconds = `0${timer % 60}`.slice(-2);
-    const minute = `${Math.floor(timer / 60)}`;
-    const getMinutes = `0${minute % 60}`.slice(-2);
-    console.log('getMinutes', getMinutes);
-    console.log('getSeconds', getSeconds);
-
-    // const getHours = `0${Math.floor(timer / 3600)}`.slice(-2)
-    return `${getMinutes} : ${getSeconds}`;
+    setIsPaused(!isPaused);
   };
 
-  console.log(formatTime());
+  //* SPEED OF COUNTER CLICK EVENT HANDLE BY BOOLEAN LOGIC
+  const defaultSpeed = () => {
+    setDefSpeed(!defSpeed);
+    setIsSpeed2(false);
+    setIsSpeed15(false);
+  };
+
+  const speedUp15 = () => {
+    setIsSpeed15(!isSpeed15);
+    setIsSpeed2(false);
+    setDefSpeed(false);
+  };
+
+  const speedUp2 = () => {
+    // console.log('speedup2');
+    setIsSpeed2(!isSpeed2);
+    setIsSpeed15(false);
+    setDefSpeed(false);
+  };
+
+  //TODO DEPLOYMENT DATE ADJUSTMENTS
+  // TODO STYLE
+  // TODO TOAST
+  // TODO REFACTOR
+  // TODO TEST
+  // TODO OPTOMIZE
+
+  const secondsToTime = (...sec) => {
+    let h = Math.floor(sec / 3600)
+      .toString()
+      .padStart(2, '0');
+    let m = Math.floor((sec % 3600) / 60)
+      .toString()
+      .padStart(2, '0');
+    let s = Math.floor(sec % 60)
+      .toString()
+      .padStart(2, '0');
+    return `${h}:${m}:${s}`;
+  };
+  console.log('TIMER Countdown.jsx', timer);
+  // console.log(formatTime());
+  // console.log('inputRef', inputRef.current.value);
+  // console.log('inputRef', inputRef);
+  // console.log('isSpeed15', isSpeed15);
+  // console.log('isSpeed2', isSpeed2);
+  // console.log('defSpeed', defSpeed);
   return (
     <div className='countDownWrapper'>
-      <label className='countDownLabel'>Count Down:</label>
+      <div className='label-input-wrapper'>
+        <label className='countDownLabel'>Count Down:</label>
 
-      <input
-        type='text'
-        value={timer}
-        onChange={onChange}
-        placeholder='(Min)'
-      />
-      {!isActive && <button onClick={onCountDown}>Start</button>}
-      {isActive && <button disabled>Start</button>}
+        <input
+          type='number'
+          ref={inputRef}
+          placeholder='(Min)'
+          min='0'
+          required
+        />
+        {isActive || timer <= -1 || isPaused ? (
+          <button className='disabled-btn' disabled>
+            START
+          </button>
+        ) : (
+          <button className='start-button' onClick={onCountDown}>
+            START
+          </button>
+        )}
+      </div>
 
       {/* Counter */}
       {/* <Counter /> */}
-      <div>
-        <h1>{!isActive ? '00 : 00' : formatTime()}</h1>
-        <button onClick={onOffCounter}>
-          {isActive ? <MdOutlineNotStarted /> : <MdMotionPhotosPause />}
+      <div className='clock-wrapper'>
+        <div className='end-half-message'>
+          {timer === 0 && isActive &&
+            <p>Time's up!</p>}
+
+            {(timer>0 && timer/2==timer)&& <p>“More than halfway there!”</p>}
+{timer/2}
+
+        </div>
+        {/* TODO need to add a   : “More than halfway there!” */}
+        {/* {inputRef.current === timer && <p>More than halfway there!</p>} */}
+        {/* <div className='clock-wrapper'> */}
+        <div>
+          <h1 className='clock-counter'>
+            {!isActive && !isPaused ? '00 : 00' : secondsToTime(timer)}
+          </h1>
+        </div>
+        <button className='stop-start-btn' onClick={onOffCounter}>
+          {isActive ? (
+            <MdOutlineNotStarted size={85} />
+          ) : (
+            <MdMotionPhotosPause size={85} />
+          )}
         </button>
       </div>
-      <div>
-        <button>1x</button>
-        <button>1.5x</button>
-        <button>2x</button>
+      <div className='speed-btn-wrapper' alt='speed-button'>
+        {defSpeed ? (
+          <button className='speed-btn' alt='speed-button' disabled>
+            1X
+          </button>
+        ) : (
+          <button
+            className='speed-btn'
+            alt='speed-button'
+            onClick={defaultSpeed}>
+            1X
+          </button>
+        )}
+        {isSpeed15 ? (
+          <button className='speed-btn' alt='speed-button' disabled>
+            1.5X
+          </button>
+        ) : (
+          <button className='speed-btn' alt='speed-button' onClick={speedUp15}>
+            1.5X
+          </button>
+        )}
+        {isSpeed2 ? (
+          <button className='speed-btn' alt='speed-button' disabled>
+            2X
+          </button>
+        ) : (
+          <button className='speed-btn' alt='speed-button' onClick={speedUp2}>
+            2X
+          </button>
+        )}
       </div>
+      <section>
+        <TimeZone
+          timer={timer}
+          secondsToTime={secondsToTime}
+          isPaused={isPaused}
+          isActive={isActive}
+        />
+      </section>
     </div>
   );
 };
