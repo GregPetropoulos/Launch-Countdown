@@ -5,12 +5,10 @@ const Counter = () => {
   const [stopped, setStopped] = useState(false);
 
 const onClick =(e) => {
-  console.log('onclickstop/start')
   setStopped(!stopped)
   if(stopped){
     // stop
-    setInterval(()=> {
-      
+    setInterval(()=> { 
     })
   }
   if(!stopped){
@@ -20,7 +18,6 @@ const onClick =(e) => {
   return (
     <div>
       <div>
-        {/* <h1>{!countDownMin ? '00:00' : countDownMin}</h1> */}
         <button onClick={onClick}>
           {stopped ? <MdOutlineNotStarted /> : <MdMotionPhotosPause />}
         </button>

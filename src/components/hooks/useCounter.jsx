@@ -11,7 +11,7 @@ const useCounter = () => {
 
   useEffect(() => {
     let interval = null;
-    console.log("TIMER in custom hook",timer);
+    
     // *RUN TIMER
     if (isActive) {
       interval = setInterval(() => {

@@ -1,6 +1,9 @@
 import { MdMotionPhotosPause, MdOutlineNotStarted } from 'react-icons/md';
 import useCounter from './hooks/useCounter';
 import TimeZone from './TimeZone';
+
+
+
 const CountDown = () => {
   const {
     isActive,
@@ -43,19 +46,12 @@ const CountDown = () => {
   };
 
   const speedUp2 = () => {
-    // console.log('speedup2');
     setIsSpeed2(!isSpeed2);
     setIsSpeed15(false);
     setDefSpeed(false);
   };
 
-  //TODO DEPLOYMENT DATE ADJUSTMENTS
-  // TODO STYLE
-  // TODO TOAST
-  // TODO REFACTOR
-  // TODO TEST
-  // TODO OPTOMIZE
-
+  // *SECONDS CONVERSION FOR COUNTER DISPLAY
   const secondsToTime = (...sec) => {
     let h = Math.floor(sec / 3600)
       .toString()
@@ -66,15 +62,12 @@ const CountDown = () => {
     let s = Math.floor(sec % 60)
       .toString()
       .padStart(2, '0');
-    return `${h}:${m}:${s}`;
+    if (timer < 60 * 60) {
+      return `${m}:${s}`;
+    } else {
+      return `${h}:${m}:${s}`;
+    }
   };
-  console.log('TIMER Countdown.jsx', timer);
-  // console.log(formatTime());
-  // console.log('inputRef', inputRef.current.value);
-  // console.log('inputRef', inputRef);
-  // console.log('isSpeed15', isSpeed15);
-  // console.log('isSpeed2', isSpeed2);
-  // console.log('defSpeed', defSpeed);
   return (
     <div className='countDownWrapper'>
       <div className='label-input-wrapper'>
@@ -88,43 +81,44 @@ const CountDown = () => {
           required
         />
         {isActive || timer <= -1 || isPaused ? (
-          <button className='disabled-btn' disabled>
+          <button className='disabled-btn'  alt='disabled start button'disabled>
             START
           </button>
         ) : (
-          <button className='start-button' onClick={onCountDown}>
+          <button className='start-button' alt='start button' onClick={onCountDown}>
             START
           </button>
         )}
       </div>
-
-      {/* Counter */}
-      {/* <Counter /> */}
       <div className='clock-wrapper'>
         <div className='end-half-message'>
-          {timer === 0 && isActive &&
-            <p>Time's up!</p>}
-
-            {(timer>0 && timer/2==timer)&& <p>“More than halfway there!”</p>}
-{timer/2}
-
+          {timer === 0 && isActive && <h2>Time's up!</h2>}
+          {timer > 0 && (~~inputRef.current.value * 60) / 2 === timer && (
+            <h2>More than halfway there!</h2>
+          )}
         </div>
-        {/* TODO need to add a   : “More than halfway there!” */}
-        {/* {inputRef.current === timer && <p>More than halfway there!</p>} */}
-        {/* <div className='clock-wrapper'> */}
-        <div>
-          <h1 className='clock-counter'>
+        <div className='counter-button-wrapper'>
+          <h1
+            className={
+              isActive && timer <= 20 && timer > 10
+                ? 'countdown-20'
+                : isActive && timer <= 10 && timer > 0
+                ? 'countdown-blink'
+                : 'clock-counter'
+            }>
             {!isActive && !isPaused ? '00 : 00' : secondsToTime(timer)}
           </h1>
+          <button className='stop-start-btn'  alt='stop and pause button' onClick={onOffCounter}>
+            {isActive ? (
+              <MdOutlineNotStarted size={65} />
+            ) : (
+              <MdMotionPhotosPause size={65} />
+            )}
+          </button>
         </div>
-        <button className='stop-start-btn' onClick={onOffCounter}>
-          {isActive ? (
-            <MdOutlineNotStarted size={85} />
-          ) : (
-            <MdMotionPhotosPause size={85} />
-          )}
-        </button>
       </div>
+
+      {/* **TODO COULD DRY THIS UP  */}
       <div className='speed-btn-wrapper' alt='speed-button'>
         {defSpeed ? (
           <button className='speed-btn' alt='speed-button' disabled>
@@ -160,8 +154,6 @@ const CountDown = () => {
       <section>
         <TimeZone
           timer={timer}
-          secondsToTime={secondsToTime}
-          isPaused={isPaused}
           isActive={isActive}
         />
       </section>

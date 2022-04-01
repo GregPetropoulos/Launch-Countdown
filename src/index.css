@@ -61,39 +61,92 @@ input {
   cursor: pointer;
   touch-action: manipulation;
 }
+.start-button:hover,
+.start-button:focus {
+  animation: start-button 1s;
+  box-shadow: 0 0 0 2em transparent;
+}
+@keyframes start-button {
+  0% {
+    box-shadow: 0 0 0 0 #00ddeb;
+  }
+}
+
 .clock-wrapper {
+  width: 100%;
+}
+/* div1 */
+.end-half-message {
+  width: 100%;
   text-align: center;
-  padding: 10px;
+}
+/* div2 */
+.counter-button-wrapper {
+  width: 100%;
   display: flex;
   justify-content: center;
-  width: 100%;
   align-items: center;
-  margin-left: 50px;
-  word-wrap: break-word;
-
+  /* text-align: center; */
 }
 .clock-counter {
+  /* text-align: center; */
+  font-size: 100px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+/* At 20 seconds turn counter to red text */
+.countdown-20 {
+  color: red;
   text-align: center;
   font-size: 100px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
+
+/* At 10 seconds start red blinking animation with keyframes */
+.countdown-blink {
+  color: red;
+  text-align: center;
+  font-size: 100px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  animation: blinker 1s linear infinite;
+}
+@keyframes blinker {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* React-icon container*/
 .stop-start-btn {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 75px;
-  height: 75px;
+  width: 65px;
+  height: 65px;
   margin: 20px;
   padding: 3px;
   border-radius: 50%;
   cursor: pointer;
   touch-action: manipulation;
-
+  transition: all 1s ease-in-out;
+}
+.stop-start-btn:hover {
+  transform: scale(0.85);
 }
 .speed-btn-wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
+  align-items: center;
   width: 100%;
 }
 .speed-btn {
@@ -110,19 +163,34 @@ input {
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
-
+  transition: all 1s ease-in-out;
 }
-.speed-btn:active, .speed-btn:hover{
-outline: 0;
+.speed-btn:active,
+.speed-btn:hover {
+  outline: 0;
+  transform: scale(1.3);
 }
 
-.timezone-wrapper{
-  text-align: left;
-
-  margin-top: 20px; 
-  margin-right: 85px; 
-  margin-left: 85px; 
+.timezone-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  width: 100%;
 }
-/* .timezone-row{
 
-} */
+.timezone-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 4px;
+  font-weight: bold;
+}
+.timezone-row>span {
+  font-weight: normal;
+  margin-right: 20px;
+}
+.timezone-heading {
+  display: flex;
+  justify-content: flex-end;
+  width: 50%;
+}

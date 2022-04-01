@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import NycTz from './NycTz';
+import LondonTz from './LondonTz';
+import SlcTz from './SlcTz';
 
-const TimeZone = ({ isActive, timer, isPaused,secondsToTime}) => {
-  const [tzUpdate, setTzUpdate] = useState(false);
+const TimeZone = ({ isActive, timer }) => {
   const [estLondon, setEstLondon] = useState([
     {
       lonDay: '',
@@ -15,8 +17,7 @@ const TimeZone = ({ isActive, timer, isPaused,secondsToTime}) => {
   ]);
 
   //   DESTRUCTURE
-  const [{ lonDay, lonMonth, lonDate, lonHours, lonMinutes, lonSeconds }] =
-    estLondon;
+  const [{ lonDay, lonDate, lonHours, lonMinutes, lonSeconds }] = estLondon;
 
   const [estNYC, setEstNYC] = useState([
     {
@@ -31,8 +32,7 @@ const TimeZone = ({ isActive, timer, isPaused,secondsToTime}) => {
   ]);
 
   //   DESTRUCTURE
-  const [{ nycDay, nycMonth, nycDate, nycHours, nycMinutes, nycSeconds }] =
-    estNYC;
+  const [{ nycDay, nycDate, nycHours, nycMinutes, nycSeconds }] = estNYC;
 
   const [estSaltLake, setEstSaltLake] = useState([
     {
@@ -47,94 +47,133 @@ const TimeZone = ({ isActive, timer, isPaused,secondsToTime}) => {
   ]);
 
   //   DESTRUCTURE
-  const [{ slcDay, slcMonth, slcDate, slcHours, slcMinutes, slcSeconds }] =
-    estSaltLake;
-
-  // * INITIAL TIME OF TIMEZONES ON FIRST PAGE RENDER
-  //   useEffect(() => {
-  //     if (timer === 0) {
-  //       lonTimeZoneToState();
-  //       nycTimeZoneToState();
-  //       slcTimeZoneToState();
-  //     }
-  //   }, []);
-
+  const [{ slcDay, slcDate, slcHours, slcMinutes, slcSeconds }] = estSaltLake;
 
   useEffect(() => {
     //  *CALCULATE THE ESTIMATED DEPLOY TIME
-    console.log('TIMER tz useeFFECT', timer);
 
     lonTimeZoneToState();
     nycTimeZoneToState();
     slcTimeZoneToState();
-   
-    if (isActive) {
 
+    if (isActive) {
       const nHours = Math.floor(timer / 3600);
-      const nMin = Math.floor(timer %3600/60);
-      const nSec = Math.floor(timer % 60)
+      const nMin = Math.floor((timer % 3600) / 60);
+      const nSec = Math.floor(timer % 60);
       const nDate = Math.floor(nHours / 24);
+      console.log(~~(240 / 60) % 60);
+      // Comma must be in the array as a string
       const nDay = [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday'
+        'Monday,',
+        'Tuesday,',
+        'Wednesday,',
+        'Thursday,',
+        'Friday,',
+        'Saturday,',
+        'Sunday,'
       ];
+      const day1bump = nDay.map((itemDate, idx, arr) =>
+        itemDate === nycDay ? arr[idx + 1] : null
+      );
+
+      const day2bump = nDay.map((itemDate, idx, arr) =>
+        itemDate === nycDay ? arr[idx + 2] : null
+      );
+
+      // *UPDATE NYC DATA VIA TIMER, LATTER SYSTEM FROM SECONDS TO DATE
       const updateNyc = () => {
-        // *UPDATE NYC DATA VIA TIMER
         setEstNYC((prevState) => {
           return prevState.map((item) => ({
             ...item,
-            nycSeconds: nycSeconds + nSec,
-            nycMinutes: nycMinutes + nMin,
-            nycHours: nycHours + nHours,
-            nycDate: nHours > 24 ? nycDate + nDate : nycDate
-            //   nycDay: nHours>24 && nDay===nycDay
+            nycSeconds:
+              nycSeconds + nSec > 59 && ~~((nycSeconds + nSec) / 60) % 60
+                ? nycMinutes + (~~((nycSeconds + nSec) / 60) % 60)
+                : nycSeconds + nSec,
+            nycMinutes:
+              nycMinutes + nMin > 59 && ~~((nycMinutes + nMin) / 60) % 60
+                ? nycHours + (~~((nycMinutes + nMin) / 60) % 60)
+                : nycMinutes + nMin,
+            nycHours:
+              nycHours + nHours > 23 - nycHours &&
+              ~~(nycHours + nHours / 24) % 24
+                ? nycHours + (~~(nycHours + nHours / 24) % 24)
+                : nycHours + nHours,
+            nycDate:
+              nycHours + nHours > 23 && nycHours + nHours < 47
+                ? nycDate + 1
+                : nycHours + nHours > 47
+                ? nycDate + 2
+                : nycDate + nDate,
+            nycDay: nDate === 1 ? day1bump : nDate > 1 ? day2bump : nycDay
           }));
         });
       };
       updateNyc();
 
+      // *UPDATE SLC DATA VIA TIMER
       const updateSlc = () => {
-        // *UPDATE SLC DATA VIA TIMER
         setEstSaltLake((prevState) => {
           return prevState.map((item) => ({
             ...item,
-            slcSeconds: slcSeconds + nSec,
-            slcMinutes: slcMinutes + nMin,
-            slcHours: slcHours + nHours,
-            slcDate: nHours > 24 ? slcDate + nDate : slcDate
-            //   slcDay: nHours>24 && nDay===slcDay
+            slcSeconds:
+              slcSeconds + nSec > 59 && ~~((slcSeconds + nSec) / 60) % 60
+                ? slcMinutes + (~~((slcSeconds + nSec) / 60) % 60)
+                : slcSeconds + nSec,
+            slcMinutes:
+              slcMinutes + nMin > 59 && ~~((slcMinutes + nMin) / 60) % 60
+                ? slcHours + (~~((slcMinutes + nMin) / 60) % 60)
+                : slcMinutes + nMin,
+            slcHours:
+              slcHours + nHours > 23 - slcHours &&
+              ~~(slcHours + nHours / 24) % 24
+                ? slcHours + (~~(slcHours + nHours / 24) % 24)
+                : slcHours + nHours,
+            slcDate:
+              slcHours + nHours > 23 && slcHours + nHours < 47
+                ? slcDate + 1
+                : slcHours + nHours > 47
+                ? slcDate + 2
+                : slcDate + nDate,
+            slcDay: nDate === 1 ? day1bump : nDate > 1 ? day2bump : slcDay
           }));
         });
       };
       updateSlc();
 
+      // *UPDATE LONDON DATA VIA TIMER
       const updateLon = () => {
-        // *UPDATE LONDON DATA VIA TIMER
         setEstLondon((prevState) => {
           return prevState.map((item) => ({
             ...item,
-            lonSeconds: lonSeconds + nSec,
-            lonMinutes: lonMinutes + nMin,
-            lonHours: lonHours + nHours,
-            lonDate: nHours > 24 ? lonDate + nDate : lonDate
-            //   lonDay: nHours>24 && nDay===lonDay
+            lonSeconds:
+              lonSeconds + nSec > 59 && ~~((lonSeconds + nSec) / 60) % 60
+                ? lonMinutes + (~~((lonSeconds + nSec) / 60) % 60)
+                : lonSeconds + nSec,
+            lonMinutes:
+              lonMinutes + nMin > 59 && ~~((lonMinutes + nMin) / 60) % 60
+                ? lonHours + (~~((lonMinutes + nMin) / 60) % 60)
+                : lonMinutes + nMin,
+            lonHours:
+              lonHours + nHours > 23 - lonHours &&
+              ~~(lonHours + nHours / 24) % 24
+                ? lonHours + (~~(lonHours + nHours / 24) % 24)
+                : lonHours + nHours,
+            lonDate:
+              lonHours + nHours > 23 && lonHours + nHours < 47
+                ? lonDate + 1
+                : lonHours + nHours > 47
+                ? lonDate + 2
+                : lonDate + nDate,
+            lonDay: nDate === 1 ? day1bump : nDate > 1 ? day2bump : lonDay
           }));
         });
       };
       updateLon();
+      console.log('dayBump1', day1bump);
     }
-   
   }, [isActive]);
 
-  //   console.log('estNYC OUTSIDE THE USEEFFECT', estNYC);
-  console.log('OUTSIDE UE--isActive', isActive);
-  console.log('OUTSIDE UE--isPaused', isPaused);
-
+  console.log(estNYC);
   // * GET THE LONDON TIME
   const lonTimeZoneToState = () => {
     const londonTime = new Date().toLocaleString('en-GB', {
@@ -142,15 +181,16 @@ const TimeZone = ({ isActive, timer, isPaused,secondsToTime}) => {
       dateStyle: 'full',
       timeStyle: 'full'
     });
+
     // *BREAK TIMEZONE INTO AN ARRAY
     const londonArray = londonTime.split(' ');
-    // console.log('londonArray', londonArray);
+
     // * BREAK DOWN TIME INTO HH:MM:SS
     const hour = parseInt(londonArray[5].split(':')[0]);
     const min = parseInt(londonArray[5].split(':')[1]);
     const sec = parseInt(londonArray[5].split(':')[2]);
+
     //* SET THE STATE
-    //   may need to dry this up later
     setEstLondon([
       {
         lonDay: londonArray[0],
@@ -174,14 +214,13 @@ const TimeZone = ({ isActive, timer, isPaused,secondsToTime}) => {
 
     // *BREAK TIMEZONE INTO AN ARRAY
     const nycArray = nycTime.split(' ');
-    console.log('nycArray', nycArray);
+
     // * BREAK DOWN TIME INTO HH:MM:SS
     const hour = parseInt(nycArray[5].split(':')[0]);
     const min = parseInt(nycArray[5].split(':')[1]);
     const sec = parseInt(nycArray[5].split(':')[2]);
 
     //* SET THE STATE
-    //   may need to dry this up later
     setEstNYC([
       {
         nycDay: nycArray[0],
@@ -194,7 +233,7 @@ const TimeZone = ({ isActive, timer, isPaused,secondsToTime}) => {
       }
     ]);
   };
-  console.log('estNYC--CHECK', estNYC);
+
   // *SLC TIME
   const slcTimeZoneToState = () => {
     const slcTime = new Date().toLocaleString('en-US', {
@@ -205,14 +244,12 @@ const TimeZone = ({ isActive, timer, isPaused,secondsToTime}) => {
 
     // *BREAK TIMEZONE INTO AN ARRAY
     const slcArray = slcTime.split(' ');
-    // console.log('slcArray', slcArray);
     // * BREAK DOWN TIME INTO HH:MM:SS
     const hour = parseInt(slcArray[5].split(':')[0]);
     const min = parseInt(slcArray[5].split(':')[1]);
     const sec = parseInt(slcArray[5].split(':')[2]);
 
     //* SET THE STATE
-    //   may need to dry this up later
     setEstSaltLake([
       {
         slcDay: slcArray[0],
@@ -242,61 +279,14 @@ const TimeZone = ({ isActive, timer, isPaused,secondsToTime}) => {
     }
   };
 
-  //*TODO HANDLE THE OVERAGE MINUTES AND ALLOCAT AS HOURS TO THE STATE
-  //*HANDLING THE MINUTES FOR THE UI AFTER THE STATE UPDATES VIA TIMER
-  const handleMinutes = (minDigits) => {
-    if (minDigits >= 0 && minDigits <= 9) {
-      return '0' + minDigits;
-    } else if (minDigits > 9) {
-      return minDigits;
-    }
-    if (minDigits > 60) {
-      return minDigits - 60;
-    }
-  };
-
   return (
     <>
-      <div className='timezone-wrapper'>
-        <small>Estimated deployment time</small>
-        <div className='timezone-row'>
-          London : {lonDay} {lonMonth} {lonDate}
-          {handleDateEnd(lonDate)} @ {lonHours}: {handleMinutes(lonMinutes)}
-        </div>
-
-        {/* <div className='timezone-row'>
-          New York City : {nycDay} {nycMonth} {nycDate}
-          {handleDateEnd(nycDate)} @ {nycHours}: {`${nycMinutes}`<9? `0${nycMinutes}`:`${nycMinutes}`>60?`${nycMinutes-nycMinutes}`:`${nycMinutes}`}
-        </div> */}
-
-        {estNYC.map((item, idx) => (
-          <div key={idx} className='timezone-row'>
-            New York City : {item.nycDay} {item.nycMonth} {item.nycDate}
-            {handleDateEnd(item.nycDate)} @{' '}
-            {`${item.nycHours}` <= 9 ? `0${item.nycHours}` : `${item.nycHours}`}{' '}
-            :{' '}
-            {`${item.nycMinutes}` <= 9
-              ? `0${item.nycMinutes}`
-              : `${item.nycMinutes}` > 60
-              ? `${item.nycMinutes}`.slice(-2)
-              : `${item.nycMinutes}`.slice(-2)}
-            {/* {handleMinutes(nycMinutes)} */}
-          </div>
-        ))}
-          {estNYC.map((item, idx) => (
-          <div key={idx} className='timezone-row'>
-            New York City : {item.nycDay} {item.nycMonth} {item.nycDate}
-            {handleDateEnd(item.nycDate)} @
-            {item.nycHours} : { item.nycMinutes}
-            {/* {handleMinutes(nycMinutes)} */}
-          </div>
-        ))}
-
-        <div className='timezone-row'>
-          Salt Lake City : {slcDay} {slcMonth} {slcDate}
-          {handleDateEnd(slcDate)} @ {slcHours}: {handleMinutes(slcMinutes)}
-        </div>
-      </div>
+      <ul className='timezone-wrapper'>
+        <small className='timezone-heading'>Estimated deployment time:</small>
+        <LondonTz estLondon={estLondon} handleDateEnd={handleDateEnd} />
+        <NycTz estNYC={estNYC} handleDateEnd={handleDateEnd} />
+        <SlcTz estSaltLake={estSaltLake} handleDateEnd={handleDateEnd} />
+      </ul>
     </>
   );
 };
