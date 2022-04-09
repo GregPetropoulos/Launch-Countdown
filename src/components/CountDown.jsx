@@ -1,7 +1,7 @@
 import { MdMotionPhotosPause, MdOutlineNotStarted } from 'react-icons/md';
 import useCounter from './hooks/useCounter';
-import TimeZone from './TimeZone';
-
+// import TimeZone from './TimeZone';
+import DeploymentTime from './DeploymentTime';
 
 
 const CountDown = () => {
@@ -152,10 +152,14 @@ const CountDown = () => {
         )}
       </div>
       <section>
-        <TimeZone
+
+<DeploymentTime/>
+
+
+        {/* <TimeZone
           timer={timer}
           isActive={isActive}
-        />
+        /> */}
       </section>
     </div>
   );
