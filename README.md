@@ -28,5 +28,5 @@ A Tech company wants to put countdown timers on TVs in their offices to celebrat
 ![Red and blinking at last 10 sec](./src/assets/png/blink.png)
 
 
-### When the timer ene the "Time's up!" message appears
+### When the timer is finished a "Time's up!" message appears
 ![Times up](./src/assets/png/timesup.png)
