@@ -185,3 +185,6 @@ max-width:385px;
 .london>p {
 margin-right:5px;
 }
+.london>p, .newyorkcity>p, .denver>p {
+font-weight:900;
+}
