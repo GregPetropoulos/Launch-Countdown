@@ -1,8 +1,6 @@
 import { MdMotionPhotosPause, MdOutlineNotStarted } from 'react-icons/md';
 import useCounter from './hooks/useCounter';
-// import TimeZone from './TimeZone';
 import DeploymentTime from './DeploymentTime';
-
 
 const CountDown = () => {
   const {
@@ -81,11 +79,14 @@ const CountDown = () => {
           required
         />
         {isActive || timer <= -1 || isPaused ? (
-          <button className='disabled-btn'  alt='disabled start button'disabled>
+          <button className='disabled-btn' alt='disabled start button' disabled>
             START
           </button>
         ) : (
-          <button className='start-button' alt='start button' onClick={onCountDown}>
+          <button
+            className='start-button'
+            alt='start button'
+            onClick={onCountDown}>
             START
           </button>
         )}
@@ -108,7 +109,10 @@ const CountDown = () => {
             }>
             {!isActive && !isPaused ? '00 : 00' : secondsToTime(timer)}
           </h1>
-          <button className='stop-start-btn'  alt='stop and pause button' onClick={onOffCounter}>
+          <button
+            className='stop-start-btn'
+            alt='stop and pause button'
+            onClick={onOffCounter}>
             {isActive ? (
               <MdOutlineNotStarted size={65} />
             ) : (
@@ -152,14 +156,7 @@ const CountDown = () => {
         )}
       </div>
       <section>
-
-<DeploymentTime/>
-
-
-        {/* <TimeZone
-          timer={timer}
-          isActive={isActive}
-        /> */}
+        <DeploymentTime isActive={isActive} timer={timer} />
       </section>
     </div>
   );

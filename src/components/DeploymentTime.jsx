@@ -1,67 +1,127 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const DeploymentTime = () => {
+const DeploymentTime = ({ isActive, timer }) => {
   // set up state to handle the date  and time values
-  const [depTime, setDepTime] = useState([
+  // const [depTime, setDepTime] = useState([
+  //   {
+  //     day: '',
+  //     month: '',
+  //     date: 0,
+  //     hours: 0,
+  //     minutes: 0,
+  //     seconds: 0,
+  //     milliseconds: 0,
+  //     year: 0
+  //   }
+  // ]);
+  // const [{ date }] = depTime;
+  // * INITIAL STATE
+  const [dateTime, setDateTime] = useState([
     {
-      day: '',
-      month: '',
-      date: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      milliseconds: 0,
-      year: 0
+      london: '',
+      nyc: '',
+      denver: ''
     }
   ]);
+  // const [isCounterActive, setIsCounterActive] = useState(true);
 
-  const [{ date }] = depTime;
-// * FIRST APPROACH GET THE TIME FOR A TZ IN MILLISECON
+  useEffect(() => {
+    // On initial render show current date
+    // setDateTime((prevState)=> [...prevState,{london:londonDate},{nyc:nycDate},{denver:denverDate}])
+    // * SET DATE TO CURRENT DATE ON FIRST RENDER
+    setDateTime([
+      {
+        london: formatTimezones(londonDate),
+        nyc: formatTimezones(nycDate),
+        denver: formatTimezones(denverDate)
+      }
+    ]);
+    //* SHOW NEW DEPLOY DATE IF COUNTER IS ACTIVE
+    if (isActive) {
+      estDeployedTime();
+    }
+  }, [timer]);
 
-
-
-//  Get the date of a time zone
-function changeTimeZone(date, timeZone) {
+  // *GET THE TIMEZONES OF LOCATION BY PASSING A STRING DATE AND TIMEZONE
+  //* -------------------------------------------------------------------------------------
+  function changeTimeZone(date, timeZone) {
     // check if string
     if (typeof date === 'string') {
       return new Date(
         new Date(date).toLocaleString('en-US', {
-          timeZone,
-        }),
+          timeZone
+        })
       );
     }
 
     return new Date(
       date.toLocaleString('en-US', {
-        timeZone,
-      }),
+        timeZone
+      })
     );
   }
+  //* -------------------------------------------------------------------------------------
+
+  // *INITIAL TIMEZONES
+  //* -------------------------------------------------------------------------------------
+  // londonDate is based off converted local EST
+  const londonDate = changeTimeZone(new Date(), 'Europe/London');
+  const nycDate = changeTimeZone(new Date(), 'America/New_York');
+  const denverDate = changeTimeZone(new Date(), 'America/Denver');
+  //* -------------------------------------------------------------------------------------
+
+  // *FORMAT TIMEZONE
+  //* -------------------------------------------------------------------------------------
+  const formatTimezones = (date) => {
+    const stringDate = date
+      .toString()
+      .replace('2022', '@')
+      .split(' ')
+      .slice(0, 5)
+      .join(' ');
+    const newFormatDate = stringDate;
+    return newFormatDate;
+  };
+  //* -------------------------------------------------------------------------------------
+
+console.log(timer);
   
-  const laDate = changeTimeZone(new Date(), 'America/Los_Angeles');
-  console.log("LA",laDate); // 👉️ "Sun Jan 16 2022 01:22:07"
-  
-  const berlinDate = changeTimeZone(new Date(), 'Europe/Berlin');
-  console.log("BERLIN",berlinDate); // 👉️ "Sun Jan 16 2022 10:22:07"
- 
-  
+  // * PASS IN THE DATE AND TIME MINUTES TO ADD TO A TIMEZONE
+  //* -------------------------------------------------------------------------------------
+  const addCounterMinutesToTimezone = (date, timer) => {
+    let oldDateObj = date;
+    let newDateObj = new Date();
+    return newDateObj.setTime(oldDateObj.getTime() + timer * 1000);
+  };
+  //* -------------------------------------------------------------------------------------
 
-//   ADD 240 MINUTES TO LA
-  var oldDateObj = laDate;
-  var newDateObj = new Date();
-  newDateObj.setTime(oldDateObj.getTime() + (240 * 60 * 1000));
-  console.log("newdateobject of la",newDateObj);
+  // * ADD MINUTES, FORMAT TIMEZONE AND SET DATE NEW DEPLOY DATE
+  //* -------------------------------------------------------------------------------------
+  const estDeployedTime = () => {
+    const nycDeploy = new Date(addCounterMinutesToTimezone(nycDate, timer));
+    const londonDeploy = new Date(addCounterMinutesToTimezone(londonDate, timer));
+    const denverDeploy = new Date(addCounterMinutesToTimezone(denverDate, timer));
 
+    setDateTime([
+      {
+        london: formatTimezones(londonDeploy),
+        nyc: formatTimezones(nycDeploy),
+        denver: formatTimezones(denverDeploy)
+      }
+    ]);
+  };
+  //* -------------------------------------------------------------------------------------
 
-  // Function for getting timezone value
-const timezoneValue =(milliseconds)=> {
-
-//    Set the state by converting the milliseconds to proper timezone
-}
+  // *DESTRUCTURE
+  const [{ london, nyc, denver }] = dateTime;
   return (
-    <div>
-      <p>Estimated Deployment time</p>
-      <p>NYC : {date} </p>
+    <div className='timezones'>
+      <small>Estimated Deployment time</small>
+      <ul className='list-of-timezones'>
+        <li className='london'>London: <p>{london}</p></li>
+        <li className='newyorkcity'>New York City: <p>{nyc}</p></li>
+        <li className='denver'>Denver: <p>{denver}</p></li>
+      </ul>
     </div>
   );
 };
